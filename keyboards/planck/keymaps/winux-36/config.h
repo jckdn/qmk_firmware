@@ -4,6 +4,8 @@
 #define TAPPING_TERM_PER_KEY
 
 #define COMBO_TERM 30
+#define COMBO_TERM_PER_COMBO
+#define COMBO_STRICT_TIMER // added to see if helps with accidental enter fires, but maybe just tweaking the timeout is good enough.
 // #define COMBO_TERM 1000 // useful to test that new fw was flashed
 
 #define PERMISSIVE_HOLD

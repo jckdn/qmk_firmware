@@ -102,6 +102,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
 }
 
+// combos
 const uint16_t PROGMEM tab_combo[] = { LSFT_T(KC_R), LALT_T(KC_S), COMBO_END };
 const uint16_t PROGMEM esc_combo[] = { LALT_T(KC_S), LCTL_T(KC_T), COMBO_END };
 const uint16_t PROGMEM enter_combo[] = { RCTL_T(KC_N), LALT_T(KC_E), COMBO_END };
@@ -114,6 +115,19 @@ combo_t key_combos[] = {
     COMBO(win_combo, KC_LGUI),
     COMBO(semi_combo, KC_SCLN)
 };
+
+// combo timeouts per combo
+#ifdef COMBO_TERM_PER_COMBO
+uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
+    // decide by combo->keycode
+    switch (combo->keycode) {
+        case KC_ENT:
+            return 30;
+    }
+
+    return COMBO_TERM;
+}
+#endif
 
 // generally useful but kind of required if using high tapping term and permissive hold
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
