@@ -122,7 +122,7 @@ uint16_t get_combo_term(uint16_t combo_index, combo_t *combo) {
     // decide by combo->keycode
     switch (combo->keycode) {
         case KC_ENT:
-            return 30;
+            return 20;
     }
 
     return COMBO_TERM;
