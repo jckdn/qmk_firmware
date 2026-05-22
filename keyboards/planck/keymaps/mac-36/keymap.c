@@ -134,12 +134,11 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         // faster tapping term for hold key actions for easier repeats
         case LT(0, KC_W):
         case LT(0, KC_C):
-        case LT(0, KC_X):
-            return 130;
-        case LT(0, KC_U):
-            return 150;
+        case LT(0, KC_X): // used to be 130. why?
+        case LT(0, KC_U): // used to be 150. why?
+            return 200;
         case LT(1, KC_BSPC):
-            return 150;
+            return 150; // why?
         default:
             return TAPPING_TERM;
     }
