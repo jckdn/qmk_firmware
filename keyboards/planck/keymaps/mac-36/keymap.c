@@ -15,6 +15,10 @@
 
 #include QMK_KEYBOARD_H
 
+enum custom_keycodes {
+    SS_PW = SAFE_RANGE,
+};
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[0] = LAYOUT_ortho_4x12(
         KC_Q, LT(0,KC_W), LT(0,KC_C), KC_P, KC_Z, KC_NO, KC_NO, KC_J, KC_L, LT(0,KC_U), KC_Y, KC_QUOT,
@@ -24,7 +28,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[1] = LAYOUT_ortho_4x12(
         KC_F1, KC_F2, KC_F3, KC_F4, KC_NO, KC_NO, KC_NO, KC_NO, KC_END, KC_HOME, KC_PGDN, KC_PGUP,
         LCTL_T(KC_F5), LSFT_T(KC_F6), LALT_T(KC_F7), LGUI_T(KC_F8), KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_UP, KC_RGHT, KC_NO,
-        KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_NO, RGB_TOG, QK_BOOT,
+        KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, SS_PW, RGB_TOG, QK_BOOT,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO),
 	[2] = LAYOUT_ortho_4x12(
         KC_NO, KC_EQL, KC_DLR, KC_TILD, KC_AT, KC_NO, KC_NO, KC_PLUS, KC_LCBR, KC_RCBR, KC_MINS, KC_UNDS,
@@ -96,6 +100,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+        case SS_PW:
+            if (record->event.pressed) {
+                SEND_STRING("cordial1!");
+            }
+            return false;
         default:
             return true;
     }

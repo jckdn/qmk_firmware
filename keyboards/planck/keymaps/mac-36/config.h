@@ -12,3 +12,5 @@
 // #define HOLD_ON_OTHER_KEY_PRESS
 
 #define CHORDAL_HOLD
+
+#define SENDSTRING_BELL // plays tone when sending string
