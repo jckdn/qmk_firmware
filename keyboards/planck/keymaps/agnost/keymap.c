@@ -36,7 +36,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_NO, KC_NO, KC_NO, MO(2), KC_LSFT, KC_NO, KC_NO, MEH_T(KC_SPC), LT(1,KC_BSPC), KC_NO, KC_NO, KC_NO),
 	[1] = LAYOUT_ortho_4x12(
         KC_F1, KC_F2, KC_F3, KC_F4, KC_NO, KC_NO, KC_NO, KC_NO, KC_END, KC_HOME, KC_PGDN, KC_PGUP,
-        LCTL_T(KC_F5), LSFT_T(KC_F6), LALT_T(KC_F7), LGUI_T(KC_F8), KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_UP, KC_RGHT, KC_NO,
+        LCTL_T(KC_F5), LSFT_T(KC_F6), LALT_T(KC_F7), LGUI_T(KC_F8), KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_UP, KC_RGHT, MAC_TOG,
         KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, SS_PW, RGB_TOG, QK_BOOT,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO),
 	[2] = LAYOUT_ortho_4x12(
@@ -95,8 +95,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // hold u - undo
         case LT(0, KC_U):
             if (!record->tap.count && record->event.pressed) {
-                // todo: test
-                // tap_code16(LCTL(KC_Z));
                 tap_code16(mod_key(KC_Z));
                 return false;
             }
@@ -105,7 +103,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // hold x - cut
         case LT(0, KC_X):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_X));
+                tap_code16(mod_key(KC_X));
                 return false;
             }
             return true;
@@ -113,7 +111,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // hold c - copy
         case LT(0, KC_C):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_C));
+                tap_code16(mod_key(KC_C));
                 return false;
             }
             return true;
@@ -121,7 +119,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // hold w - paste
         case LT(0, KC_W):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_V));
+                tap_code16(mod_key(KC_V));
                 return false;
             }
             return true;
