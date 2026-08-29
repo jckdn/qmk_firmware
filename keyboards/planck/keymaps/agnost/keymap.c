@@ -11,10 +11,13 @@
  *   - https://precondition.github.io/home-row-mods#permissive-hold
  * - put win key tap somewhere? a combo?
  * - thumb key combos? thumb combo hold layers? thumb combo OSMs?
- * - do something else with spc-meh mod-tap for windows?
  */
 
 #include QMK_KEYBOARD_H
+
+enum custom_keycodes {
+    SS_PW = SAFE_RANGE,
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[0] = LAYOUT_ortho_4x12(
@@ -25,7 +28,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[1] = LAYOUT_ortho_4x12(
         KC_F1, KC_F2, KC_F3, KC_F4, KC_NO, KC_NO, KC_NO, KC_NO, KC_END, KC_HOME, KC_PGDN, KC_PGUP,
         LCTL_T(KC_F5), LSFT_T(KC_F6), LALT_T(KC_F7), LGUI_T(KC_F8), KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_UP, KC_RGHT, KC_NO,
-        KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, KC_NO, RGB_TOG, QK_BOOT,
+        KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, SS_PW, RGB_TOG, QK_BOOT,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO),
 	[2] = LAYOUT_ortho_4x12(
         KC_NO, KC_EQL, KC_DLR, KC_TILD, KC_AT, KC_NO, KC_NO, KC_PLUS, KC_LCBR, KC_RCBR, KC_MINS, KC_UNDS,
@@ -42,7 +45,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         // mod-tap workaround: !
-        case LGUI_T(KC_EXLM):
+        case LCTL_T(KC_EXLM):
             if (record->tap.count && record->event.pressed) {
                 tap_code16(KC_EXLM);
                 return false;
@@ -63,7 +66,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
             return true;
         // mod-tap workaround: >
-        case LCTL_T(KC_GT):
+        case LGUI_T(KC_GT):
             if (record->tap.count && record->event.pressed) {
                 tap_code16(KC_GT);
                 return false;
@@ -72,31 +75,36 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // hold u - undo
         case LT(0, KC_U):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_Z));
+                tap_code16(LGUI(KC_Z));
                 return false;
             }
             return true;
         // hold x - cut
         case LT(0, KC_X):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_X));
+                tap_code16(LGUI(KC_X));
                 return false;
             }
             return true;
         // hold c - copy
         case LT(0, KC_C):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_C));
+                tap_code16(LGUI(KC_C));
                 return false;
             }
             return true;
         // hold w - paste
         case LT(0, KC_W):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_V));
+                tap_code16(LGUI(KC_V));
                 return false;
             }
             return true;
+        case SS_PW:
+            if (record->event.pressed) {
+                SEND_STRING("cordial1!");
+            }
+            return false;
         default:
             return true;
     }
@@ -104,15 +112,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 // combos
 const uint16_t PROGMEM tab_combo[] = { LSFT_T(KC_R), LALT_T(KC_S), COMBO_END };
-const uint16_t PROGMEM esc_combo[] = { LALT_T(KC_S), LCTL_T(KC_T), COMBO_END };
-const uint16_t PROGMEM enter_combo[] = { RCTL_T(KC_N), LALT_T(KC_E), COMBO_END };
-const uint16_t PROGMEM win_combo[] = { LALT_T(KC_E), RSFT_T(KC_I), COMBO_END };
+const uint16_t PROGMEM esc_combo[] = { LALT_T(KC_S), LGUI_T(KC_T), COMBO_END };
+const uint16_t PROGMEM enter_combo[] = { RGUI_T(KC_N), LALT_T(KC_E), COMBO_END };
+// const uint16_t PROGMEM win_combo[] = { LALT_T(KC_E), RSFT_T(KC_I), COMBO_END };
 const uint16_t PROGMEM semi_combo[] = { KC_COMM, KC_DOT, COMBO_END };
 combo_t key_combos[] = {
     COMBO(tab_combo, KC_TAB),
     COMBO(esc_combo, KC_ESC),
     COMBO(enter_combo, KC_ENT),
-    COMBO(win_combo, KC_LGUI),
+    // COMBO(win_combo, KC_LGUI),
     COMBO(semi_combo, KC_SCLN)
 };
 
@@ -135,12 +143,11 @@ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
         // faster tapping term for hold key actions for easier repeats
         case LT(0, KC_W):
         case LT(0, KC_C):
-        case LT(0, KC_X):
-            return 130;
-        case LT(0, KC_U):
-            return 150;
+        case LT(0, KC_X): // used to be 130. why?
+        case LT(0, KC_U): // used to be 150. why?
+            return 200;
         case LT(1, KC_BSPC):
-            return 150;
+            return 150; // why?
         default:
             return TAPPING_TERM;
     }
