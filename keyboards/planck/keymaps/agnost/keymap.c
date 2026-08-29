@@ -16,8 +16,17 @@
 #include QMK_KEYBOARD_H
 
 enum custom_keycodes {
-    SS_PW = SAFE_RANGE,
+    MAC_TOG = SAFE_RANGE,
+    SS_PW = SAFE_RANGE + 1
 };
+
+// allows toggling between stuff that depends on mac vs win mod key behaviour, like ctrl vs cmd (gui)
+bool mac_mode = true;
+
+// gets the appropriate mod key for OS behaviours like ctr-c/cmd-c
+uint16_t mod_key(uint16_t kc) {
+    return mac_mode ? LGUI(kc) : LCTL(kc);
+}
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[0] = LAYOUT_ortho_4x12(
@@ -44,6 +53,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
+        // toggle mac mode
+        case MAC_TOG:
+            if (record->event.pressed) {
+                mac_mode = !mac_mode;
+            }
+            return false;
+
         // mod-tap workaround: !
         case LCTL_T(KC_EXLM):
             if (record->tap.count && record->event.pressed) {
@@ -51,6 +67,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         // mod-tap workaround: #
         case LSFT_T(KC_HASH):
             if (record->tap.count && record->event.pressed) {
@@ -58,6 +75,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         // mod-tap workaround: <
         case LALT_T(KC_LT):
             if (record->tap.count && record->event.pressed) {
@@ -65,6 +83,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         // mod-tap workaround: >
         case LGUI_T(KC_GT):
             if (record->tap.count && record->event.pressed) {
@@ -72,13 +91,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         // hold u - undo
         case LT(0, KC_U):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_Z));
+                // todo: test
+                // tap_code16(LCTL(KC_Z));
+                tap_code16(mod_key(KC_Z));
                 return false;
             }
             return true;
+
         // hold x - cut
         case LT(0, KC_X):
             if (!record->tap.count && record->event.pressed) {
@@ -86,6 +109,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         // hold c - copy
         case LT(0, KC_C):
             if (!record->tap.count && record->event.pressed) {
@@ -93,6 +117,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         // hold w - paste
         case LT(0, KC_W):
             if (!record->tap.count && record->event.pressed) {
@@ -100,11 +125,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 return false;
             }
             return true;
+
         case SS_PW:
             if (record->event.pressed) {
                 SEND_STRING("cordial1!");
             }
             return false;
+
         default:
             return true;
     }
