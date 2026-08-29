@@ -33,22 +33,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_Q, LT(0,KC_W), LT(0,KC_C), KC_P, KC_Z, KC_NO, KC_NO, KC_J, KC_L, LT(0,KC_U), KC_Y, KC_QUOT,
         LCTL_T(KC_A), LSFT_T(KC_R), LALT_T(KC_S), LGUI_T(KC_T), KC_G, KC_NO, KC_NO, KC_M, RGUI_T(KC_N), LALT_T(KC_E), RSFT_T(KC_I), RCTL_T(KC_O),
         LT(0,KC_X), KC_V, KC_F, LT(3,KC_D), KC_B, KC_NO, KC_NO, KC_K, KC_H, KC_COMM, KC_DOT, KC_SLSH,
-        KC_NO, KC_NO, KC_NO, MO(2), KC_LSFT, KC_NO, KC_NO, MEH_T(KC_SPC), LT(1,KC_BSPC), KC_NO, KC_NO, KC_NO),
+        KC_NO, KC_NO, KC_NO, MO(2), KC_LSFT, KC_NO, KC_NO, MEH_T(KC_SPC), LT(1,KC_BSPC), KC_NO, KC_NO, KC_NO
+    ),
 	[1] = LAYOUT_ortho_4x12(
         KC_F1, KC_F2, KC_F3, KC_F4, KC_NO, KC_NO, KC_NO, KC_NO, KC_END, KC_HOME, KC_PGDN, KC_PGUP,
         LCTL_T(KC_F5), LSFT_T(KC_F6), LALT_T(KC_F7), LGUI_T(KC_F8), KC_NO, KC_NO, KC_NO, KC_NO, KC_DOWN, KC_UP, KC_RGHT, MAC_TOG,
         KC_F9, KC_F10, KC_F11, KC_F12, KC_NO, KC_NO, KC_NO, KC_NO, KC_LEFT, SS_PW, RGB_TOG, QK_BOOT,
-        KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO),
+        KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_NO
+    ),
+    /* DT_PRNT, DT_UP, DT_DOWN are for printing and adjusting tap term. */
 	[2] = LAYOUT_ortho_4x12(
         KC_NO, KC_EQL, KC_DLR, KC_TILD, KC_AT, KC_NO, KC_NO, KC_PLUS, KC_LCBR, KC_RCBR, KC_MINS, KC_UNDS,
         LCTL_T(KC_EXLM), LSFT_T(KC_HASH), LALT_T(KC_LT), LGUI_T(KC_GT), KC_PERC, KC_NO, KC_NO, KC_ASTR, KC_LPRN, KC_RPRN, KC_AMPR, KC_GRV,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_CIRC, KC_LBRC, KC_RBRC, KC_PIPE, KC_BSLS,
-        KC_NO, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_SPC, KC_DEL, /*tap term keys*/ DT_PRNT, DT_UP, DT_DOWN),
+        KC_NO, KC_NO, KC_NO, KC_TRNS, KC_TRNS, KC_NO, KC_NO, KC_SPC, KC_DEL, DT_PRNT, DT_UP, DT_DOWN
+    ),
 	[3] = LAYOUT_ortho_4x12(
         KC_CAPS, KC_SCRL, KC_NUM, KC_PSCR, KC_NO, KC_NO, KC_NO, KC_NO, KC_P7, KC_P8, KC_P9, KC_NO,
         KC_LCTL, KC_LSFT, KC_LALT, KC_LGUI, KC_NO, KC_NO, KC_NO, KC_NO, KC_P4, KC_P5, KC_P6, KC_NO,
         KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_NO, KC_P1, KC_P2, KC_P3, KC_NO,
-        KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_P0, KC_NO, KC_NO, KC_NO, KC_NO)
+        KC_NO, KC_NO, KC_NO, KC_NO, KC_TRNS, KC_NO, KC_NO, KC_P0, KC_NO, KC_NO, KC_NO, KC_NO
+    )
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
