@@ -75,28 +75,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // hold u - undo
         case LT(0, KC_U):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_Z));
+                tap_code16(LCTL_T(KC_Z));
                 return false;
             }
             return true;
         // hold x - cut
         case LT(0, KC_X):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_X));
+                tap_code16(LCTL_T(KC_X));
                 return false;
             }
             return true;
         // hold c - copy
         case LT(0, KC_C):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_C));
+                tap_code16(LCTL_T(KC_C));
                 return false;
             }
             return true;
         // hold w - paste
         case LT(0, KC_W):
             if (!record->tap.count && record->event.pressed) {
-                tap_code16(LCTL(KC_V));
+                tap_code16(LCTL_T(KC_V));
                 return false;
             }
             return true;
