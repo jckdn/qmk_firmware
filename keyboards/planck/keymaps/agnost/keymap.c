@@ -23,6 +23,38 @@ enum custom_keycodes {
 // allows toggling between stuff that depends on mac vs win mod key behaviour, like ctrl vs cmd (gui)
 bool mac_mode = true;
 
+/**
+ * mac_mode persistence.
+ *
+ * The live flag stays a plain bool - mod_config reads it on every single keypress - and the
+ * union below is just its EEPROM representation, touched only at the two sync points: load on
+ * boot (keyboard_post_init_user) and save on toggle (MAC_TOG). QMK gives each keymap one
+ * 32-bit user slot, so there's room here if anything else ever needs to persist.
+ *
+ * The `configured` bit exists because a slot that has never been written reads back as all
+ * zeroes, which is indistinguishable from a genuine "mac_mode off". That's not hypothetical:
+ * an EEPROM initialised by an earlier build of this firmware has a zeroed user slot, so
+ * without the marker the first boot after flashing would come up in windows mode. With it,
+ * an unwritten slot just falls through to the compiled-in default above.
+ */
+typedef union {
+    uint32_t raw;
+    struct {
+        bool configured : 1;
+        bool mac_mode   : 1;
+    };
+} agnost_config_t;
+
+static agnost_config_t agnost_config;
+
+void keyboard_post_init_user(void) {
+    agnost_config.raw = eeconfig_read_user();
+
+    if (agnost_config.configured) {
+        mac_mode = agnost_config.mac_mode;
+    }
+}
+
 // gets the appropriate mod key for OS behaviours like ctr-c/cmd-c.
 // note: these go out via tap_code16, which builds its mods with extract_mod_bits and so
 // deliberately bypasses mod_config below - no double swapping to worry about.
@@ -123,6 +155,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 // stuck, since the release re-resolves the action against the new mac_mode.
                 clear_mods();
                 clear_weak_mods();
+                // persist, so the board comes back up on whichever OS it was last set for
+                agnost_config.configured = true;
+                agnost_config.mac_mode   = mac_mode;
+                eeconfig_update_user(agnost_config.raw);
             }
             return false;
 
