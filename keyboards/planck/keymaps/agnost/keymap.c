@@ -43,15 +43,15 @@ typedef union {
         bool configured : 1;
         bool mac_mode   : 1;
     };
-} agnost_config_t;
+} config_t;
 
-static agnost_config_t agnost_config;
+static config_t config;
 
 void keyboard_post_init_user(void) {
-    agnost_config.raw = eeconfig_read_user();
+    config.raw = eeconfig_read_user();
 
-    if (agnost_config.configured) {
-        mac_mode = agnost_config.mac_mode;
+    if (config.configured) {
+        mac_mode = config.mac_mode;
     }
 }
 
@@ -151,14 +151,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case MAC_TOG:
             if (record->event.pressed) {
                 mac_mode = !mac_mode;
-                // a mod held across the toggle would be released as the *other* mod and get
-                // stuck, since the release re-resolves the action against the new mac_mode.
+
+                // possible claude paranoia: a mod held across the toggle would be released as the
+                // *other* mod and get stuck, since the release re-resolves the action against the
+                // new mac_mode.
                 clear_mods();
                 clear_weak_mods();
+
                 // persist, so the board comes back up on whichever OS it was last set for
-                agnost_config.configured = true;
-                agnost_config.mac_mode   = mac_mode;
-                eeconfig_update_user(agnost_config.raw);
+                config.configured = true;
+                config.mac_mode   = mac_mode;
+                eeconfig_update_user(config.raw);
             }
             return false;
 
