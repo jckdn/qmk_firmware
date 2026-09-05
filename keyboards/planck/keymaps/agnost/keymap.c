@@ -57,9 +57,21 @@ void keyboard_post_init_user(void) {
     }
 }
 
-// gets the appropriate mod key for OS behaviours like ctr-c/cmd-c.
-// note: these go out via tap_code16, which builds its mods with extract_mod_bits and so
-// deliberately bypasses mod_config below - no double swapping to worry about.
+/**
+ * Gets the appropriate mod key for OS behaviours like ctrl-c/cmd-c.
+ *
+ * This is a separate concern from the ctrl/gui position swap below, not a duplicate of it,
+ * even though both hang off mac_mode. The swap answers "where does this modifier sit under my
+ * fingers" - positional, and necessarily uniform across every ctrl/gui in keymaps[]. This
+ * answers "which modifier does this one shortcut use" - per shortcut, and not always the same
+ * answer: terminal ctrl-c is ctrl on both OSes, and stays that way by writing a plain
+ * LCTL(KC_C) rather than calling this.
+ *
+ * That escape hatch exists because these go out via tap_code16, which builds its mods with
+ * extract_mod_bits and so bypasses mod_config below - which also means nothing here gets
+ * double swapped. Folding the two together would need an adapter to bridge tap_code16 into
+ * mod_config, and would cost the escape hatch, so they're deliberately left apart.
+ */
 uint16_t mod_key(uint16_t kc) {
     return mac_mode ? LGUI(kc) : LCTL(kc);
 }
