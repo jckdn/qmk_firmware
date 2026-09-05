@@ -23,9 +23,66 @@ enum custom_keycodes {
 // allows toggling between stuff that depends on mac vs win mod key behaviour, like ctrl vs cmd (gui)
 bool mac_mode = true;
 
-// gets the appropriate mod key for OS behaviours like ctr-c/cmd-c
+// gets the appropriate mod key for OS behaviours like ctr-c/cmd-c.
+// note: these go out via tap_code16, which builds its mods with extract_mod_bits and so
+// deliberately bypasses mod_config below - no double swapping to worry about.
 uint16_t mod_key(uint16_t kc) {
     return mac_mode ? LGUI(kc) : LCTL(kc);
+}
+
+/**
+ * Ctrl/gui position swapping.
+ *
+ * The keymap is laid out mac-style: ctrl on the pinky, gui (cmd) on the index finger, since
+ * cmd is the workhorse modifier on mac. On windows ctrl is the workhorse, so when mac_mode is
+ * off we want those two to trade places - everywhere they appear, on both hands.
+ *
+ * Rather than duplicating every layer, we override the two weak core hooks that translate a
+ * keymap entry into the mods it actually registers. Both are consulted in action_for_keycode,
+ * i.e. at the moment a key is pressed, so flipping mac_mode takes effect immediately.
+ *
+ * Doing it at this level (instead of, say, rewriting the keymap lookup) matters because it
+ * happens *after* combo matching and process_record_user: those still see the keycodes exactly
+ * as written in keymaps[], so the combos and the mod-tap workarounds below keep working
+ * unchanged.
+ *
+ * QMK has a built-in version of this (the CG_SWAP/CG_TOGG magic keycodes, which set
+ * keymap_config.swap_lctl_lgui / swap_rctl_rgui). We don't use it because its swap is bitwise:
+ * it would also turn MEH_T(KC_SPC) - ctrl+shift+alt - into shift+alt+gui. Swapping only keys
+ * whose mod set is *exactly* ctrl or *exactly* gui leaves multi-mod keys like meh alone.
+ *
+ * Overriding these does mean the bootmagic remappings they normally implement (swap
+ * ctrl/capslock, grave/esc, etc.) are inert, but this keymap doesn't use any of them.
+ */
+
+// mods for mod-taps, e.g. LCTL_T(KC_A). 5-bit packed mods, so the left/right flag comes along.
+uint8_t mod_config(uint8_t mod) {
+    if (mac_mode) {
+        return mod;
+    }
+
+    switch (mod) {
+        case MOD_LCTL: return MOD_LGUI;
+        case MOD_LGUI: return MOD_LCTL;
+        case MOD_RCTL: return MOD_RGUI;
+        case MOD_RGUI: return MOD_RCTL;
+        default:       return mod; // leave combined mods (MEH_T etc.) alone
+    }
+}
+
+// plain modifier keycodes, e.g. the KC_LCTL/KC_LGUI on layer 3. these don't go via mod_config.
+uint16_t keycode_config(uint16_t keycode) {
+    if (mac_mode) {
+        return keycode;
+    }
+
+    switch (keycode) {
+        case KC_LCTL: return KC_LGUI;
+        case KC_LGUI: return KC_LCTL;
+        case KC_RCTL: return KC_RGUI;
+        case KC_RGUI: return KC_RCTL;
+        default:      return keycode;
+    }
 }
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -62,6 +119,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case MAC_TOG:
             if (record->event.pressed) {
                 mac_mode = !mac_mode;
+                // a mod held across the toggle would be released as the *other* mod and get
+                // stuck, since the release re-resolves the action against the new mac_mode.
+                clear_mods();
+                clear_weak_mods();
             }
             return false;
 
