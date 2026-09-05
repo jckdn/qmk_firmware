@@ -103,6 +103,16 @@ uint16_t mod_key(uint16_t kc) {
  * ctrl/capslock, grave/esc, etc.) are inert, but this keymap doesn't use any of them.
  */
 
+// ############ COMMENT OUT THE NEXT LINE TO TURN THE POSITION SWAPPING OFF ############
+// With it gone, the two overrides below aren't compiled, QMK's own do-nothing versions take
+// over, and the home row mods behave exactly as written in keymaps[] - ctrl on the pinky, gui
+// on the index - on both OSes, ignoring mac_mode entirely. That's the pre-swap behaviour.
+// Everything else keeps working: MAC_TOG still toggles, and the hold shortcuts (mod_key above)
+// still follow it, so hold-w is still cmd-v on mac and ctrl-v on win.
+#define AGNOST_SWAP_CTRL_GUI
+
+#ifdef AGNOST_SWAP_CTRL_GUI
+
 // mods for mod-taps, e.g. LCTL_T(KC_A). 5-bit packed mods, so the left/right flag comes along.
 uint8_t mod_config(uint8_t mod) {
     if (mac_mode) {
@@ -132,6 +142,8 @@ uint16_t keycode_config(uint16_t keycode) {
         default:      return keycode;
     }
 }
+
+#endif // AGNOST_SWAP_CTRL_GUI
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	[0] = LAYOUT_ortho_4x12(
