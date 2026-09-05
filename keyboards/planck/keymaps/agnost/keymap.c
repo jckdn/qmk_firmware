@@ -20,8 +20,9 @@ enum custom_keycodes {
     SS_PW = SAFE_RANGE + 1
 };
 
-// allows toggling between stuff that depends on mac vs win mod key behaviour, like ctrl vs cmd (gui)
-bool mac_mode = true;
+// allows toggling between stuff that depends on mac vs win mod key behaviour, like ctrl vs cmd (gui).
+// defaults off (win/linux), which is where this board mostly lives.
+bool mac_mode = false;
 
 /**
  * mac_mode persistence.
@@ -31,11 +32,12 @@ bool mac_mode = true;
  * boot (keyboard_post_init_user) and save on toggle (MAC_TOG). QMK gives each keymap one
  * 32-bit user slot, so there's room here if anything else ever needs to persist.
  *
- * The `configured` bit exists because a slot that has never been written reads back as all
- * zeroes, which is indistinguishable from a genuine "mac_mode off". That's not hypothetical:
- * an EEPROM initialised by an earlier build of this firmware has a zeroed user slot, so
- * without the marker the first boot after flashing would come up in windows mode. With it,
- * an unwritten slot just falls through to the compiled-in default above.
+ * The `configured` bit is there because a slot that has never been written reads back as all
+ * zeroes, which on its own is indistinguishable from a genuinely stored value. The marker
+ * makes "never toggled" a state we can detect, so an unwritten slot falls through to the
+ * compiled-in default above and that default stays the single source of truth. It happens to
+ * agree with zero right now (mac_mode defaults false), but flipping the default back would
+ * otherwise silently stop working on any board whose user slot has never been written.
  */
 typedef union {
     uint32_t raw;
@@ -65,9 +67,11 @@ uint16_t mod_key(uint16_t kc) {
 /**
  * Ctrl/gui position swapping.
  *
- * The keymap is laid out mac-style: ctrl on the pinky, gui (cmd) on the index finger, since
- * cmd is the workhorse modifier on mac. On windows ctrl is the workhorse, so when mac_mode is
- * off we want those two to trade places - everywhere they appear, on both hands.
+ * The keymaps[] arrays below are *written* mac-style: ctrl on the pinky, gui (cmd) on the
+ * index finger, since cmd is the workhorse modifier on mac. On windows ctrl is the workhorse,
+ * so when mac_mode is off we want those two to trade places - everywhere they appear, on both
+ * hands. Note that off is the default, so the swapped (windows) arrangement is what you
+ * actually get unless you toggle; mac-style is just the notation, not the resting state.
  *
  * Rather than duplicating every layer, we override the two weak core hooks that translate a
  * keymap entry into the mods it actually registers. Both are consulted in action_for_keycode,
